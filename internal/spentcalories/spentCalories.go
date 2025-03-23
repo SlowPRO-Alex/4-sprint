@@ -16,21 +16,24 @@ const (
 
 func parseTraining(data string) (int, string, time.Duration, error) {
 	s := strings.Split(data, ",")
-	if len(s) == 3 {
-		steps, err := strconv.Atoi(s[0])
-		if err != nil {
-			return 0, "", 0, fmt.Errorf("Неверное число шагов!")
-		}
-		if steps <= 0 {
-			return 0, "", 0, fmt.Errorf("Число шагов должно быть больше 0!")
-		}
-		t, err := time.ParseDuration(s[2])
-		if err != nil {
-			return 0, "", 0, fmt.Errorf("Неверная продолжительность прогулки!")
-		}
-		return steps, s[1], t, nil
+	if len(s) != 3 {
+		return 0, "", 0, fmt.Errorf("incorrect number of arguments: %d != 3", len(s))
 	}
-	return 0, "", 0, fmt.Errorf("Неверное количество аргументов!")
+	steps, err := strconv.Atoi(s[0])
+	if err != nil {
+		return 0, "", 0, fmt.Errorf("conversion error: %w", err)
+	}
+	if steps <= 0 {
+		return 0, "", 0, fmt.Errorf("the number of steps must be greater than 0: steps = %d", steps)
+	}
+	t, err := time.ParseDuration(s[2])
+	if err != nil {
+		return 0, "", 0, fmt.Errorf("incorrect walk duration. %v", err)
+	}
+	if t <= 0 {
+		return 0, "", 0, fmt.Errorf("the walking time must be greater than 0: t = %v", t)
+	}
+	return steps, s[1], t, nil
 }
 
 // distance возвращает дистанцию(в километрах), которую преодолел пользователь за время тренировки.

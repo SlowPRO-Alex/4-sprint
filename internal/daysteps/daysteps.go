@@ -15,21 +15,24 @@ var (
 
 func parsePackage(data string) (int, time.Duration, error) {
 	s := strings.Split(data, ",")
-	if len(s) == 2 {
-		steps, err := strconv.Atoi(s[0])
-		if err != nil {
-			return 0, 0, fmt.Errorf("Неверное число шагов!")
-		}
-		if steps <= 0 {
-			return 0, 0, fmt.Errorf("Число шагов должно быть больше 0!")
-		}
-		t, err := time.ParseDuration(s[1])
-		if err != nil {
-			return 0, 0, fmt.Errorf("Неверная продолжительность прогулки!")
-		}
-		return steps, t, nil
+	if len(s) != 2 {
+		return 0, 0, fmt.Errorf("incorrect number of arguments: %d != 2", len(s))
 	}
-	return 0, 0, fmt.Errorf("Неверное количество аргументов!")
+	steps, err := strconv.Atoi(s[0])
+	if err != nil {
+		return 0, 0, fmt.Errorf("conversion error: %w", err)
+	}
+	if steps <= 0 {
+		return 0, 0, fmt.Errorf("the number of steps must be greater than 0: steps = %d", steps)
+	}
+	t, err := time.ParseDuration(s[1])
+	if err != nil {
+		return 0, 0, fmt.Errorf("incorrect walk duration. %v", err)
+	}
+	if t <= 0 {
+		return 0, 0, fmt.Errorf("the walking time must be greater than 0: t = %v", t)
+	}
+	return steps, t, nil
 }
 
 // DayActionInfo обрабатывает входящий пакет, который передаётся в
